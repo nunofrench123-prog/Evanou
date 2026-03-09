@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Evanou</title>
+  <link rel="icon" href="/logo.jpeg" type="image/jpeg">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -11,7 +12,10 @@
   <!-- ========== Écran de connexion ========== -->
   <div id="auth-container" class="container">
     <div class="auth-card">
-      <h1 class="logo">💕 Evanou</h1>
+      <h1 class="logo">
+        <img src="/logo.jpeg" alt="Evanou" class="logo-img">
+        <span>Evanou</span>
+      </h1>
       <p class="subtitle">Notre espace à nous</p>
 
       <!-- Formulaire de connexion -->
@@ -63,7 +67,10 @@
 
     <!-- Barre de navigation -->
     <header class="app-header">
-      <h1 class="logo-small">💕 Evanou</h1>
+      <h1 class="logo-small">
+        <img src="/logo.jpeg" alt="Evanou" class="logo-small-img">
+        <span>Evanou</span>
+      </h1>
       <div class="header-right">
         <span id="user-name" class="user-name"></span>
         <button id="logout-btn" class="btn btn-small btn-outline">Déconnexion</button>
@@ -74,6 +81,7 @@
     <nav class="tab-nav">
       <button class="tab-btn active" data-tab="messages">💬 Messages</button>
       <button class="tab-btn" data-tab="notes">📝 Notes</button>
+      <button class="tab-btn" data-tab="voyages">✈️ Voyages</button>
     </nav>
 
     <!-- Section Messages -->
@@ -98,6 +106,43 @@
         <input type="text" id="note-title" placeholder="Titre de la note" required>
         <textarea id="note-content" placeholder="Contenu..." required></textarea>
         <button type="submit" class="btn btn-primary">Ajouter</button>
+      </form>
+    </section>
+
+    <!-- Section Voyages -->
+    <section id="tab-voyages" class="tab-content">
+      <div class="section-header">
+        <h2>Nos voyages</h2>
+      </div>
+      <div id="voyages-list" class="items-list voyages-list"></div>
+      <form id="voyage-form" class="input-form voyage-form">
+        <div class="voyage-form-grid">
+          <div class="form-group">
+            <label for="voyage-name">Nom du voyage</label>
+            <input type="text" id="voyage-name" placeholder="Lisbonne 🇵🇹" required>
+          </div>
+          <div class="form-group">
+            <label for="voyage-destination">Destination</label>
+            <input type="text" id="voyage-destination" placeholder="Lisbonne, Portugal" required>
+          </div>
+          <div class="form-group">
+            <label for="voyage-depart">Date de départ</label>
+            <input type="date" id="voyage-depart" required>
+          </div>
+          <div class="form-group">
+            <label for="voyage-retour">Date de retour</label>
+            <input type="date" id="voyage-retour" required>
+          </div>
+          <div class="form-group">
+            <label for="voyage-budget">Budget estimé (€)</label>
+            <input type="number" id="voyage-budget" placeholder="850" min="0">
+          </div>
+          <div class="form-group voyage-form-notes">
+            <label for="voyage-notes">Notes / Description</label>
+            <textarea id="voyage-notes" placeholder="Planifiez les détails de votre voyage..." rows="3"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter le voyage</button>
       </form>
     </section>
   </div>

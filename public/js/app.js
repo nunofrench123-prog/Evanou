@@ -10,7 +10,10 @@ import {
   listenMessages,
   addNote,
   deleteNote,
-  listenNotes
+  listenNotes,
+  addVoyage,
+  deleteVoyage,
+  listenVoyages
 } from "./database.js";
 import {
   doc,
@@ -41,11 +44,21 @@ const noteForm       = document.getElementById("note-form");
 const noteTitleInput = document.getElementById("note-title");
 const noteContentInput = document.getElementById("note-content");
 
+const voyagesList        = document.getElementById("voyages-list");
+const voyageForm         = document.getElementById("voyage-form");
+const voyageNameInput    = document.getElementById("voyage-name");
+const voyageDestInput    = document.getElementById("voyage-destination");
+const voyageDepartInput  = document.getElementById("voyage-depart");
+const voyageRetourInput  = document.getElementById("voyage-retour");
+const voyageBudgetInput  = document.getElementById("voyage-budget");
+const voyageNotesInput   = document.getElementById("voyage-notes");
+
 // ---------- État ----------
 let currentUser      = null;
 let currentUserName  = "";
 let unsubMessages    = null;
 let unsubNotes       = null;
+let unsubVoyages     = null;
 
 // ==================== AUTHENTIFICATION ====================
 
@@ -235,16 +248,136 @@ noteForm.addEventListener("submit", async (e) => {
   await addNote(currentUser.uid, currentUserName, title, content);
 });
 
+// ==================== VOYAGES ====================
+
+function renderVoyages(voyages) {
+  if (voyages.length === 0) {
+    voyagesList.innerHTML = '<div class="empty-state">Pas encore de voyages ✈️</div>';
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  voyagesList.innerHTML = voyages
+    .map((voyage) => {
+      const isOwn = currentUser && voyage.authorId === currentUser.uid;
+
+      const depart  = new Date(voyage.departDate);
+      const retour  = new Date(voyage.returnDate);
+      depart.setHours(0, 0, 0, 0);
+      retour.setHours(0, 0, 0, 0);
+
+      // Durée en jours
+      const dureeDays = Math.round((retour - depart) / (1000 * 60 * 60 * 24)) + 1;
+      const dureeLabel = dureeDays === 1 ? "1 jour" : `${dureeDays} jours`;
+
+      // Statut
+      let badgeClass, badgeText;
+      if (today < depart) {
+        badgeClass = "badge-upcoming";
+        badgeText  = "À venir ✨";
+      } else if (today >= depart && today <= retour) {
+        badgeClass = "badge-ongoing";
+        badgeText  = "En cours 🌍";
+      } else {
+        badgeClass = "badge-past";
+        badgeText  = "Terminé ✅";
+      }
+
+      // Compteur
+      let countdownText;
+      const diffMs   = depart - today;
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays > 0) {
+        countdownText = `Dans ${diffDays} jour${diffDays > 1 ? "s" : ""} ! 🗓️`;
+      } else if (diffDays === 0) {
+        countdownText = "C'est maintenant ! 🎉";
+      } else {
+        const pastDays = Math.abs(diffDays);
+        countdownText = `Il y a ${pastDays} jour${pastDays > 1 ? "s" : ""}`;
+      }
+
+      const formatDate = (d) =>
+        d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+
+      const budgetEl = voyage.budget
+        ? `<div class="voyage-detail-item">
+             <span class="voyage-detail-label">💰 Budget</span>
+             <span class="voyage-detail-value voyage-budget">${Number(voyage.budget).toLocaleString("fr-FR")} €</span>
+           </div>`
+        : "";
+
+      const notesEl = voyage.notes
+        ? `<div class="voyage-notes-block">📝 ${escapeHTML(voyage.notes)}</div>`
+        : "";
+
+      const deleteEl = isOwn
+        ? `<button class="delete-btn" data-type="voyage" data-id="${voyage.id}" title="Supprimer">🗑️</button>`
+        : "";
+
+      return `
+        <div class="voyage-card">
+          ${deleteEl}
+          <div class="voyage-header">
+            <div class="voyage-title">${escapeHTML(voyage.name)}</div>
+            <span class="voyage-badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="voyage-details">
+            <div class="voyage-detail-item">
+              <span class="voyage-detail-label">📍 Destination</span>
+              <span class="voyage-detail-value">${escapeHTML(voyage.destination)}</span>
+            </div>
+            <div class="voyage-detail-item">
+              <span class="voyage-detail-label">⏱️ Durée</span>
+              <span class="voyage-detail-value">${dureeLabel}</span>
+            </div>
+            <div class="voyage-detail-item">
+              <span class="voyage-detail-label">📅 Dates</span>
+              <span class="voyage-detail-value">Du ${formatDate(depart)} au ${formatDate(retour)}</span>
+            </div>
+            ${budgetEl}
+          </div>
+          <span class="voyage-countdown">${countdownText}</span>
+          ${notesEl}
+        </div>`;
+    })
+    .join("");
+}
+
+voyageForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name        = voyageNameInput.value.trim();
+  const destination = voyageDestInput.value.trim();
+  const depart      = voyageDepartInput.value;
+  const retour      = voyageRetourInput.value;
+  const budget      = voyageBudgetInput.value;
+  const notes       = voyageNotesInput.value.trim();
+
+  if (!name || !destination || !depart || !retour || !currentUser) return;
+
+  voyageNameInput.value   = "";
+  voyageDestInput.value   = "";
+  voyageDepartInput.value = "";
+  voyageRetourInput.value = "";
+  voyageBudgetInput.value = "";
+  voyageNotesInput.value  = "";
+
+  await addVoyage(currentUser.uid, currentUserName, name, destination, depart, retour, budget, notes);
+});
+
 // ==================== LISTENERS EN TEMPS RÉEL ====================
 
 function startListeners() {
   unsubMessages = listenMessages(renderMessages);
   unsubNotes    = listenNotes(renderNotes);
+  unsubVoyages  = listenVoyages(renderVoyages);
 }
 
 function stopListeners() {
   if (unsubMessages) { unsubMessages(); unsubMessages = null; }
   if (unsubNotes)    { unsubNotes();    unsubNotes    = null; }
+  if (unsubVoyages)  { unsubVoyages();  unsubVoyages  = null; }
 }
 
 // ==================== SUPPRESSION ====================
@@ -258,6 +391,7 @@ document.addEventListener("click", async (e) => {
 
   if (type === "message") await deleteMessage(id);
   if (type === "note")    await deleteNote(id);
+  if (type === "voyage")  await deleteVoyage(id);
 });
 
 // ==================== UTILITAIRES ====================

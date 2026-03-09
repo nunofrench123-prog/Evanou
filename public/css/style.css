@@ -1,16 +1,18 @@
 /* ========== Variables ========== */
 :root {
-  --color-primary: #e8567f;
-  --color-primary-dark: #c9345d;
-  --color-bg: #fdf2f4;
-  --color-card: #ffffff;
-  --color-text: #333333;
-  --color-text-light: #777777;
-  --color-border: #f0d0d8;
-  --color-error: #d32f2f;
-  --color-success: #388e3c;
-  --radius: 12px;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --color-primary: #d4af37;
+  --color-primary-dark: #b8962e;
+  --color-bg: #0a0a0f;
+  --color-card: #1a1a2e;
+  --color-card-hover: #22223a;
+  --color-text: #e8e8e8;
+  --color-text-light: #9a9ab0;
+  --color-border: #2a2a3e;
+  --color-error: #ff6b6b;
+  --color-success: #51cf66;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --gold-glow: 0 0 20px rgba(212, 175, 55, 0.15);
 }
 
 /* ========== Reset & Base ========== */
@@ -25,8 +27,28 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: var(--color-bg);
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 20%, rgba(26, 26, 46, 0.8) 0%, transparent 60%);
   color: var(--color-text);
   min-height: 100vh;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
 }
 
 .hidden {
@@ -45,16 +67,33 @@ body {
 .auth-card {
   background: var(--color-card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), var(--gold-glow);
   padding: 40px;
   width: 100%;
   max-width: 420px;
   text-align: center;
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
 }
 
 .logo {
-  font-size: 2.2rem;
+  font-size: 1.6rem;
   margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+}
+
+.logo-img {
+  height: 80px;
+  width: auto;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--gold-glow);
 }
 
 .subtitle {
@@ -86,12 +125,15 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text);
 }
 
 .form-group input:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
 }
 
 .auth-switch {
@@ -113,13 +155,13 @@ body {
 .error-msg {
   margin-top: 16px;
   padding: 10px 14px;
-  background: #fce4ec;
+  background: rgba(255, 107, 107, 0.12);
   color: var(--color-error);
   border-radius: 8px;
   font-size: 0.9rem;
+  border: 1px solid rgba(255, 107, 107, 0.25);
 }
 
-/* ========== Buttons ========== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -130,7 +172,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
 }
 
 .btn:active {
@@ -139,12 +181,13 @@ body {
 
 .btn-primary {
   background: var(--color-primary);
-  color: #fff;
+  color: #0a0a0f;
   width: 100%;
 }
 
 .btn-primary:hover {
   background: var(--color-primary-dark);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
 }
 
 .btn-small {
@@ -159,8 +202,8 @@ body {
 }
 
 .btn-outline:hover {
-  background: var(--color-primary);
-  color: #fff;
+  background: rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
 }
 
 /* ========== App Header ========== */
@@ -171,13 +214,28 @@ body {
   padding: 16px 24px;
   background: var(--color-card);
   box-shadow: var(--shadow);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .logo-small {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.04em;
+}
+
+.logo-small-img {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--gold-glow);
 }
 
 .header-right {
@@ -219,7 +277,7 @@ body {
 }
 
 .tab-btn:hover {
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
 }
 
 .tab-content {
@@ -259,6 +317,13 @@ body {
   box-shadow: var(--shadow);
   padding: 16px;
   position: relative;
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.item-card:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: var(--shadow), var(--gold-glow);
 }
 
 .item-card .item-author {
@@ -322,12 +387,16 @@ body {
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-form input:focus,
 .input-form textarea:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
 }
 
 .input-form textarea {
@@ -362,6 +431,200 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ========== Voyage Cards ========== */
+.voyages-list {
+  max-height: none;
+}
+
+.voyage-card {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  position: relative;
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 16px;
+}
+
+.voyage-card:hover {
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: var(--shadow), var(--gold-glow);
+}
+
+.voyage-card .voyage-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.voyage-card .voyage-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.voyage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.voyage-badge.badge-upcoming {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.voyage-badge.badge-ongoing {
+  background: rgba(81, 207, 102, 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(81, 207, 102, 0.3);
+}
+
+.voyage-badge.badge-past {
+  background: rgba(154, 154, 176, 0.12);
+  color: var(--color-text-light);
+  border: 1px solid rgba(154, 154, 176, 0.2);
+}
+
+.voyage-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 20px;
+  margin-bottom: 14px;
+}
+
+.voyage-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.voyage-detail-label {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.voyage-detail-value {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.voyage-budget {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.voyage-countdown {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(212, 175, 55, 0.08);
+  color: var(--color-primary);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+.voyage-notes-block {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+.voyage-card .delete-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--color-text-light);
+  transition: color 0.2s;
+}
+
+.voyage-card .delete-btn:hover {
+  color: var(--color-error);
+}
+
+/* ========== Voyage Form ========== */
+.voyage-form {
+  flex-direction: column;
+  gap: 16px;
+}
+
+.voyage-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.voyage-form-grid .form-group {
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.voyage-form-notes {
+  grid-column: 1 / -1;
+}
+
+.voyage-form .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.voyage-form .form-group input,
+.voyage-form .form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.voyage-form .form-group input:focus,
+.voyage-form .form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+}
+
+.voyage-form .form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.voyage-form .btn {
+  align-self: flex-start;
+  width: auto;
+  min-width: 180px;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 600px) {
   .auth-card {
@@ -386,5 +649,17 @@ body {
 
   .header-right .user-name {
     display: none;
+  }
+
+  .voyage-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .voyage-form .btn {
+    width: 100%;
+  }
+
+  .voyage-details {
+    grid-template-columns: 1fr;
   }
 }
