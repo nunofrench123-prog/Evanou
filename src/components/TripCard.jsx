@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { format, parseISO, differenceInDays, isPast } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +29,13 @@ function getTripStatus(trip) {
 export default function TripCard({ trip, onEdit }) {
   const navigate = useNavigate();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const confirmTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (confirmTimerRef.current) clearTimeout(confirmTimerRef.current);
+    };
+  }, []);
 
   const status = getTripStatus(trip);
   const daysLeft = trip.startDate
@@ -39,7 +46,7 @@ export default function TripCard({ trip, onEdit }) {
     e.stopPropagation();
     if (!confirmDelete) {
       setConfirmDelete(true);
-      setTimeout(() => setConfirmDelete(false), 3000);
+      confirmTimerRef.current = setTimeout(() => setConfirmDelete(false), 3000);
       return;
     }
     await deleteTrip(trip.id);
@@ -84,7 +91,7 @@ export default function TripCard({ trip, onEdit }) {
                 {trip.country}
               </span>
             )}
-            {trip.budget && (
+            {trip.budget != null && (
               <span className="flex items-center gap-1">
                 <Wallet className="w-3.5 h-3.5" />
                 {Number(trip.budget).toLocaleString('fr-FR')} €

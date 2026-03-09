@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { subscribeToTrips } from '../firebase/firestore';
 import TripCard from '../components/TripCard';
 import TripModal from '../components/TripModal';
@@ -22,6 +23,7 @@ function getTripStatus(trip) {
 }
 
 export default function TripsPage() {
+  const { user } = useAuth();
   const [trips, setTrips] = useState([]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -29,9 +31,10 @@ export default function TripsPage() {
   const [editTrip, setEditTrip] = useState(null);
 
   useEffect(() => {
-    const unsub = subscribeToTrips(setTrips);
+    if (!user?.uid) return;
+    const unsub = subscribeToTrips(user.uid, setTrips);
     return unsub;
-  }, []);
+  }, [user?.uid]);
 
   const filtered = trips.filter((t) => {
     const matchFilter = filter === 'all' || getTripStatus(t) === filter;

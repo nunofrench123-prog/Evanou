@@ -55,8 +55,50 @@ Dans la console Firebase → Firestore → Règles :
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isParticipant(tripData) {
+      return isSignedIn() &&
+        request.auth.uid in tripData.participants;
+    }
+
+    // Profil utilisateur : lecture/écriture uniquement sur son propre document
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Voyages et leurs sous-collections
+    match /trips/{tripId} {
+      allow read, write: if isParticipant(resource.data);
+      allow create: if isSignedIn() &&
+        request.auth.uid in request.resource.data.participants;
+
+      match /activities/{activityId} {
+        allow read, write: if isParticipant(
+          get(/databases/$(database)/documents/trips/$(tripId)).data
+        );
+      }
+
+      match /packing/{itemId} {
+        allow read, write: if isParticipant(
+          get(/databases/$(database)/documents/trips/$(tripId)).data
+        );
+      }
+
+      match /expenses/{expenseId} {
+        allow read, write: if isParticipant(
+          get(/databases/$(database)/documents/trips/$(tripId)).data
+        );
+      }
+
+      match /meta/{document} {
+        allow read, write: if isParticipant(
+          get(/databases/$(database)/documents/trips/$(tripId)).data
+        );
+      }
     }
   }
 }

@@ -8,26 +8,43 @@ import {
   onSnapshot,
   query,
   orderBy,
+  where,
   serverTimestamp,
   getDoc,
   setDoc,
+  getDocs,
 } from 'firebase/firestore';
 
 // ───── TRIPS ─────────────────────────────────────────────────────────────────
 
-/** Listen in real-time to all trips */
-export function subscribeToTrips(callback) {
-  const q = query(collection(db, 'trips'), orderBy('startDate', 'asc'));
+/** Listen in real-time to trips belonging to a user */
+export function subscribeToTrips(uid, callback) {
+  const q = query(
+    collection(db, 'trips'),
+    where('participants', 'array-contains', uid),
+    orderBy('startDate', 'asc')
+  );
   return onSnapshot(q, (snapshot) => {
     const trips = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
     callback(trips);
   });
 }
 
-/** Create a new trip */
-export async function createTrip(data) {
+/** Listen in real-time to a single trip document */
+export function subscribeToTrip(id, callback) {
+  return onSnapshot(
+    doc(db, 'trips', id),
+    (snap) => callback(snap.exists() ? { id: snap.id, ...snap.data() } : null),
+    () => callback(null)
+  );
+}
+
+/** Create a new trip scoped to the authenticated user */
+export async function createTrip(data, uid) {
   return addDoc(collection(db, 'trips'), {
     ...data,
+    ownerId: uid,
+    participants: [uid],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -41,8 +58,15 @@ export async function updateTrip(id, data) {
   });
 }
 
-/** Delete a trip */
+/** Delete a trip and all its subcollections */
 export async function deleteTrip(id) {
+  const subcollections = ['activities', 'packing', 'expenses'];
+  for (const sub of subcollections) {
+    const snap = await getDocs(collection(db, 'trips', id, sub));
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+  }
+  // Delete the notes meta document
+  await deleteDoc(doc(db, 'trips', id, 'meta', 'notes')).catch(() => {});
   return deleteDoc(doc(db, 'trips', id));
 }
 
