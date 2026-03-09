@@ -14,9 +14,10 @@ export default function Dashboard() {
   const [editTrip, setEditTrip] = useState(null);
 
   useEffect(() => {
-    const unsub = subscribeToTrips(setTrips);
+    if (!user?.uid) return;
+    const unsub = subscribeToTrips(user.uid, setTrips);
     return unsub;
-  }, []);
+  }, [user?.uid]);
 
   const upcoming = trips.filter((t) => t.startDate && !isPast(parseISO(t.startDate)));
   const past = trips.filter((t) => t.endDate && isPast(parseISO(t.endDate)));

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plane } from 'lucide-react';
 import { createTrip, updateTrip } from '../firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const EMOJIS = ['✈️','🏖️','🏔️','🗺️','🌴','🏕️','🌍','🗼','🗽','🏰','🌋','🏄','🎭','🍜','🎪','⛷️'];
 const COLORS = [
@@ -12,10 +13,9 @@ const COLORS = [
   'linear-gradient(90deg, #f97316, #facc15)',
 ];
 
-const SOLID_COLORS = ['#f43f5e','#3b82f6','#f59e0b','#10b981','#8b5cf6','#f97316'];
-
 export default function TripModal({ isOpen, onClose, editTrip }) {
   const isEdit = !!editTrip;
+  const { user } = useAuth();
   const [form, setForm] = useState({
     destination: '',
     country: '',
@@ -36,7 +36,7 @@ export default function TripModal({ isOpen, onClose, editTrip }) {
         description: editTrip.description || '',
         startDate: editTrip.startDate || '',
         endDate: editTrip.endDate || '',
-        budget: editTrip.budget || '',
+        budget: editTrip.budget ?? '',
         emoji: editTrip.emoji || '✈️',
         color: editTrip.color || COLORS[0],
       });
@@ -60,11 +60,11 @@ export default function TripModal({ isOpen, onClose, editTrip }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = { ...form, budget: form.budget ? Number(form.budget) : null };
+      const data = { ...form, budget: form.budget !== '' ? Number(form.budget) : null };
       if (isEdit) {
         await updateTrip(editTrip.id, data);
       } else {
-        await createTrip(data);
+        await createTrip(data, user.uid);
       }
       onClose();
     } finally {

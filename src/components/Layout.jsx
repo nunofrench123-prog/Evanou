@@ -88,7 +88,12 @@ export default function Layout({ children }) {
 
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shadow-sm">
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="p-1">
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="p-1"
+          aria-label={mobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+          aria-expanded={mobileOpen}
+        >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
         <span className="text-lg font-bold bg-gradient-to-r from-rose-500 to-purple-600 bg-clip-text text-transparent">

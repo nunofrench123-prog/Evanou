@@ -22,7 +22,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import {
-  getTrip,
+  subscribeToTrip,
   subscribeToActivities,
   addActivity,
   deleteActivity,
@@ -119,6 +119,8 @@ function ActivitiesSection({ tripId }) {
             <button
               onClick={() => deleteActivity(tripId, act.id)}
               className="text-gray-300 hover:text-red-400 transition-colors shrink-0"
+              aria-label="Supprimer l'activité"
+              title="Supprimer l'activité"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -251,6 +253,7 @@ function PackingSection({ tripId }) {
                   <button
                     onClick={() => deletePackingItem(tripId, item.id)}
                     className="text-gray-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                    aria-label="Supprimer cet élément"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -301,8 +304,9 @@ function BudgetSection({ tripId, totalBudget }) {
   }, [tripId]);
 
   const total = expenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-  const remaining = totalBudget ? totalBudget - total : null;
-  const pct = totalBudget ? Math.min((total / totalBudget) * 100, 100) : 0;
+  const hasBudget = typeof totalBudget === 'number' && Number.isFinite(totalBudget);
+  const remaining = hasBudget ? totalBudget - total : null;
+  const pct = hasBudget && totalBudget !== 0 ? Math.min((total / totalBudget) * 100, 100) : 0;
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -317,7 +321,7 @@ function BudgetSection({ tripId, totalBudget }) {
   return (
     <Section title="Budget & Dépenses" icon={PiggyBank} badge={`${total.toLocaleString('fr-FR')} €`}>
       {/* Budget overview */}
-      {totalBudget ? (
+      {hasBudget ? (
         <div className="mb-5">
           <div className="flex justify-between items-center mb-2">
             <div>
@@ -356,6 +360,8 @@ function BudgetSection({ tripId, totalBudget }) {
             <button
               onClick={() => deleteExpense(tripId, exp.id)}
               className="text-gray-200 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+              aria-label="Supprimer la dépense"
+              title="Supprimer la dépense"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -492,23 +498,17 @@ export default function TripDetail() {
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
-    getTrip(id).then((t) => {
-      if (!cancelled) {
-        setTrip(t);
-        setLoading(false);
-      }
+    const unsub = subscribeToTrip(id, (t) => {
+      setTrip(t);
+      setLoading(false);
     });
-    return () => { cancelled = true; };
-  }, [id, refreshKey]);
+    return unsub;
+  }, [id]);
 
-  // Re-fetch after edit modal closes
   const handleEditClose = () => {
     setEditOpen(false);
-    setRefreshKey((k) => k + 1);
   };
 
   if (loading) {
@@ -589,7 +589,7 @@ export default function TripDetail() {
                   {duration} jour{duration > 1 ? 's' : ''}
                 </div>
               )}
-              {trip.budget && (
+              {trip.budget != null && (
                 <div className="flex items-center gap-1 text-sm">
                   <Wallet className="w-4 h-4 text-white/70" />
                   Budget : {Number(trip.budget).toLocaleString('fr-FR')} €
