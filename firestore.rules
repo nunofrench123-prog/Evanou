@@ -1,0 +1,30 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Les utilisateurs peuvent lire/écrire uniquement leurs propres données
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Les messages sont lisibles par les utilisateurs authentifiés
+    // et modifiables uniquement par leur auteur
+    match /messages/{messageId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.authorId == request.auth.uid;
+    }
+
+    // Les notes partagées sont accessibles aux utilisateurs authentifiés
+    match /notes/{noteId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.authorId == request.auth.uid;
+    }
+  }
+}

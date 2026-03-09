@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evanou</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- ========== Écran de connexion ========== -->
+  <div id="auth-container" class="container">
+    <div class="auth-card">
+      <h1 class="logo">💕 Evanou</h1>
+      <p class="subtitle">Notre espace à nous</p>
+
+      <!-- Formulaire de connexion -->
+      <form id="login-form" class="auth-form">
+        <h2>Connexion</h2>
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="ton@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <input type="password" id="login-password" placeholder="Mot de passe" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Se connecter</button>
+        <p class="auth-switch">
+          Pas encore de compte ?
+          <a href="#" id="show-register">Créer un compte</a>
+        </p>
+      </form>
+
+      <!-- Formulaire d'inscription -->
+      <form id="register-form" class="auth-form hidden">
+        <h2>Créer un compte</h2>
+        <div class="form-group">
+          <label for="register-name">Prénom</label>
+          <input type="text" id="register-name" placeholder="Ton prénom" required>
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="ton@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Mot de passe</label>
+          <input type="password" id="register-password" placeholder="6 caractères minimum" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary">Créer mon compte</button>
+        <p class="auth-switch">
+          Déjà un compte ?
+          <a href="#" id="show-login">Se connecter</a>
+        </p>
+      </form>
+
+      <div id="auth-error" class="error-msg hidden"></div>
+    </div>
+  </div>
+
+  <!-- ========== Application principale ========== -->
+  <div id="app-container" class="container hidden">
+
+    <!-- Barre de navigation -->
+    <header class="app-header">
+      <h1 class="logo-small">💕 Evanou</h1>
+      <div class="header-right">
+        <span id="user-name" class="user-name"></span>
+        <button id="logout-btn" class="btn btn-small btn-outline">Déconnexion</button>
+      </div>
+    </header>
+
+    <!-- Navigation par onglets -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="messages">💬 Messages</button>
+      <button class="tab-btn" data-tab="notes">📝 Notes</button>
+    </nav>
+
+    <!-- Section Messages -->
+    <section id="tab-messages" class="tab-content active">
+      <div class="section-header">
+        <h2>Nos messages</h2>
+      </div>
+      <div id="messages-list" class="items-list"></div>
+      <form id="message-form" class="input-form">
+        <input type="text" id="message-input" placeholder="Écrire un message..." required>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+      </form>
+    </section>
+
+    <!-- Section Notes -->
+    <section id="tab-notes" class="tab-content">
+      <div class="section-header">
+        <h2>Nos notes</h2>
+      </div>
+      <div id="notes-list" class="items-list"></div>
+      <form id="note-form" class="input-form">
+        <input type="text" id="note-title" placeholder="Titre de la note" required>
+        <textarea id="note-content" placeholder="Contenu..." required></textarea>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- Firebase SDK (via CDN) -->
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/database.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
