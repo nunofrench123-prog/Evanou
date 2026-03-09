@@ -81,3 +81,42 @@ export function listenNotes(callback) {
     callback(notes);
   });
 }
+
+// ==================== VOYAGES ====================
+
+/**
+ * Ajoute un voyage dans Firestore.
+ */
+export async function addVoyage(authorId, authorName, name, destination, departDate, returnDate, budget, notes) {
+  await addDoc(collection(db, "voyages"), {
+    authorId:    authorId,
+    authorName:  authorName,
+    name:        name,
+    destination: destination,
+    departDate:  departDate,
+    returnDate:  returnDate,
+    budget:      budget,
+    notes:       notes,
+    createdAt:   new Date().toISOString()
+  });
+}
+
+/**
+ * Supprime un voyage par son identifiant.
+ */
+export async function deleteVoyage(voyageId) {
+  await deleteDoc(doc(db, "voyages", voyageId));
+}
+
+/**
+ * Écoute les voyages en temps réel (triés par date de départ, les plus proches en premier).
+ * @param {function} callback - Reçoit un tableau de voyages.
+ * @returns {function} Fonction pour se désabonner.
+ */
+export function listenVoyages(callback) {
+  const q = query(collection(db, "voyages"), orderBy("departDate", "asc"));
+  return onSnapshot(q, (snapshot) => {
+    const voyages = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    callback(voyages);
+  });
+}
