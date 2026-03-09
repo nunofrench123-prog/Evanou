@@ -1,27 +1,18 @@
 // ============================================================
 // Configuration Firebase — Evanou
 // ============================================================
-// IMPORTANT : Remplace les valeurs ci-dessous par celles de
-// ton propre projet Firebase.
-//
-// Pour les obtenir :
-// 1. Va sur https://console.firebase.google.com/
-// 2. Crée un projet (ou ouvre le tien)
-// 3. Clique sur l'icône </> (Web) pour ajouter une app web
-// 4. Copie les valeurs de firebaseConfig ici
-// ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getAuth }       from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
 import { getFirestore }  from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:            "REMPLACE_PAR_TA_CLE_API",
-  authDomain:        "REMPLACE.firebaseapp.com",
-  projectId:         "REMPLACE",
-  storageBucket:     "REMPLACE.firebasestorage.app",
-  messagingSenderId: "000000000000",
-  appId:             "1:000000000000:web:xxxxxxxxxxxxxxxx"
+  apiKey:            "AIzaSyB9uhShDPb8Vsd4UVqXZN8Qj3TjEWA2Hl4",
+  authDomain:        "evanou-couple.firebaseapp.com",
+  projectId:         "evanou-couple",
+  storageBucket:     "evanou-couple.firebasestorage.app",
+  messagingSenderId: "77495825868",
+  appId:             "1:77495825868:web:1fa6d6a84948f863cbd969"
 };
 
 // Initialise Firebase
