@@ -1,0 +1,14 @@
+{
+  "name": "evanou",
+  "version": "1.0.0",
+  "description": "Une application personnelle pour moi et ma copine",
+  "private": true,
+  "scripts": {
+    "start": "firebase emulators:start",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  }
+}
